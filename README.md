@@ -110,15 +110,12 @@ vercel --prod
 ## 🤝 Contributing
 Contributions make the open-source community an amazing place to learn, inspire, and create! Any contributions you make are greatly appreciated.
 
-Fork the Project
+1. Fork the Project
+2. Create your Feature Branch (git checkout -b feature/AmazingFeature)
+3. Commit your Changes (git commit -m 'Add some AmazingFeature')
+4. Push to the Branch (git push origin feature/AmazingFeature)
+5. Open a Pull Request
 
-Create your Feature Branch (git checkout -b feature/AmazingFeature)
-
-Commit your Changes (git commit -m 'Add some AmazingFeature')
-
-Push to the Branch (git push origin feature/AmazingFeature)
-
-Open a Pull Request
 ---
 ## 📄 License
 Distributed under the MIT License. See LICENSE for more information.

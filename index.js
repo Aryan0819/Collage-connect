@@ -20,7 +20,7 @@ app.use(cookieParser());
 
 // Connect to MongoDB
 // It's crucial to use process.env.MONGODB_URI in production for security and flexibility.
-mongoose.connect(process.env.MONGODB_URI || 'mongodb+srv://vrishankraina:vrishank@cluster0.2wttn.mongodb.net/collegeconnect')
+mongoose.connect(process.env.MONGODB_URI || 'your id')
   .then(() => console.log("Connected to Database"))
   .catch(err => console.log("Error in Connecting to Database: ", err));
 
@@ -325,4 +325,5 @@ app.get("/admin/view_registrations", authenticateToken, authorizeAdmin, async (r
 // Route to serve the Registrations HTML page
 app.get("/registrations_list", (req, res) => {
     res.sendFile(path.join(__dirname, "public", "pages", "view_registrations.html"));
+
 });

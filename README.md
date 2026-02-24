@@ -83,6 +83,7 @@ Install the necessary packages using npm:
 
 ```bash
 npm install
+```
 ---
 ##Configure Environment
 Create a .env file in the root directory and add your credentials:
@@ -90,18 +91,21 @@ Create a .env file in the root directory and add your credentials:
 ```bash
 MONGODB_URI=your_mongodb_connection_string
 JWT_SECRET=your_jwt_secret_key
+```
 ---
 ## Launch Application
 Start the server locally:
 
 ```bash
 node index.js
+```
 ---
 ## ☁️ Vercel Deployment
 Deploying to production is seamless using the Vercel CLI. Ensure you have the Vercel CLI installed, then run:
 
 ```bash
 vercel --prod
+```
 ---
 ## 🤝 Contributing
 Contributions make the open-source community an amazing place to learn, inspire, and create! Any contributions you make are greatly appreciated.

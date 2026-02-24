@@ -75,6 +75,7 @@ college-connect-main/
    ```bash
    git clone [https://github.com/your-username/college-connect.git](https://github.com/your-username/college-connect.git)
    cd college-connect
+   ```
 ---
 ### Setup Dependencies
 

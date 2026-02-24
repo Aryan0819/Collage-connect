@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Admin - View Registrations</title>
+    <style>
+        body { font-family: Arial, sans-serif; background-color: #f4f4f9; margin: 0; }
+        .navbar { display: flex; justify-content: space-between; align-items: center; background-color: #1B263B; padding: 10px 20px; color: white; }
+        .nav-links a { color: white; text-decoration: none; margin-left: 20px; }
+        .nav-links a:hover { color: #4CAF50; }
+        .container { padding: 40px; }
+        .table-box { background: white; padding: 25px; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
+        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+        th, td { padding: 12px; border: 1px solid #eee; text-align: left; }
+        th { background-color: #1B263B; color: white; }
+        tr:nth-child(even) { background-color: #f9f9f9; }
+    </style>
+</head>
+<body>
+    <div class="navbar">
+        <div class="logo">Connect</div>
+        <div class="nav-links">
+            <a href="admin_events">Events</a>
+            <a href="admin_clubs">Clubs</a>
+            <a href="registrations_list" style="color: #4CAF50; font-weight: bold;">View Registrations</a>
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="table-box">
+            <h2>Student Registration List</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Student Name</th>
+                        <th>Email</th>
+                        <th>Phone</th>
+                        <th>Role</th>
+                    </tr>
+                </thead>
+                <tbody id="studentData"></tbody>
+            </table>
+        </div>
+    </div>
+
+    <script>
+        async function loadRegistrations() {
+            const token = localStorage.getItem('jwtToken'); // Matches your admin_event.html key
+            const response = await fetch('/admin/view_registrations', {
+                headers: { 'Authorization': `Bearer ${token}` }
+            });
+
+            if (response.ok) {
+                const students = await response.json();
+                document.getElementById('studentData').innerHTML = students.map(s => `
+                    <tr>
+                        <td><strong>${s.name}</strong></td>
+                        <td>${s.email}</td>
+                        <td>${s.phno || 'N/A'}</td>
+                        <td>${s.role}</td>
+                    </tr>
+                `).join('');
+            } else {
+                alert("Unauthorized! Please login as Admin.");
+                window.location.href = '/';
+            }
+        }
+        window.onload = loadRegistrations;
+    </script>
+</body>
+</html>

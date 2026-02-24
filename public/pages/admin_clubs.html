@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Admin - Manage Clubs</title>
+    <style>
+        body { font-family: Arial, sans-serif; background-color: #f4f4f9; margin: 0; }
+        .navbar {
+            display: flex; justify-content: space-between; align-items: center;
+            background-color: #1B263B; padding: 10px 20px; color: white;
+            position: sticky; top: 0; z-index: 1000;
+        }
+        .navbar .nav-links { display: flex; gap: 20px; }
+        .navbar a { color: white; text-decoration: none; }
+        .club-list { display: flex; flex-wrap: wrap; gap: 20px; justify-content: center; padding: 20px; }
+        .club-card { background: white; padding: 20px; border-radius: 10px; width: 300px; box-shadow: 0 4px 8px rgba(0,0,0,0.1); }
+        .approve-btn { background-color: #4CAF50; color: white; border: none; padding: 10px; border-radius: 5px; cursor: pointer; }
+        .decline-btn { background-color: #f44336; color: white; border: none; padding: 10px; border-radius: 5px; cursor: pointer; }
+    </style>
+</head>
+<body>
+    <div class="navbar">
+        <button id="logoutBtn" style="background:#032fc0; color:white; border:none; padding:8px 16px; border-radius:5px; cursor:pointer;">Logout</button>
+        <div class="nav-links">
+            <a href="admin_events">Events</a>
+            <a href="admin_clubs">Clubs</a>
+            <a href="registrations_list" style="color: #4CAF50; font-weight: bold;">View Registrations</a>
+        </div>
+        <div class="logo" style="font-size: 24px; font-weight: bold; color: #ACB0BD;">Connect</div>
+    </div>
+
+    <h2 style="text-align: center; margin-top: 20px;">Pending Student Clubs</h2>
+    <div id="clubList" class="club-list"></div>
+
+    <script>
+        async function fetchClubs() {
+            const response = await fetch('/pending_clubs');
+            const clubs = await response.json();
+            const clubList = document.getElementById("clubList");
+            clubList.innerHTML = clubs.map(club => `
+                <div class="club-card">
+                    <h3>${club.name}</h3>
+                    <p>Created by: ${club.createdBy}</p>
+                    <button class="approve-btn" onclick="approveClub('${club._id}')">Approve</button>
+                    <button class="decline-btn" onclick="deleteClub('${club._id}')">Decline</button>
+                </div>
+            `).join('');
+        }
+
+        async function approveClub(clubId) {
+            const token = localStorage.getItem('jwtToken');
+            await fetch('/admin/approve_club', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+                body: JSON.stringify({ clubId })
+            });
+            fetchClubs();
+        }
+
+        async function deleteClub(clubId) {
+            const token = localStorage.getItem('jwtToken');
+            await fetch('/admin/delete_club', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+                body: JSON.stringify({ clubId })
+            });
+            fetchClubs();
+        }
+
+        document.getElementById('logoutBtn').addEventListener('click', () => {
+            localStorage.removeItem('jwtToken');
+            window.location.href = '/';
+        });
+
+        window.onload = fetchClubs;
+    </script>
+</body>
+</html>

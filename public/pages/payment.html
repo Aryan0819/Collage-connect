@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Payment Details - College Connect</title>
+    <style>
+        body {
+            background-color: #f0f2f5;
+            font-family: 'Segoe UI', sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+        }
+        .payment-container {
+            display: flex;
+            gap: 40px;
+            padding: 20px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+        .info-card {
+            background: white;
+            padding: 30px;
+            border-radius: 25px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+            width: 380px;
+            text-align: center;
+        }
+        .info-card h3 {
+            margin-bottom: 25px;
+            color: #333;
+            font-size: 1.4rem;
+        }
+        .info-item {
+            background: #f8f9fa;
+            margin: 12px 0;
+            padding: 15px;
+            border-radius: 12px;
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.95rem;
+            box-shadow: inset 0 1px 3px rgba(0,0,0,0.02);
+        }
+        .info-item span { color: #666; }
+        .info-item strong { color: #000; }
+        .qr-container {
+            width: 200px;
+            height: 200px;
+            margin: 0 auto 20px;
+            border: 1px solid #eee;
+            padding: 10px;
+            border-radius: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .qr-container img {
+            max-width: 100%;
+            max-height: 100%;
+            object-fit: contain;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="payment-container">
+        <div class="info-card">
+            <h3>Bank Account Details</h3>
+            <div class="info-item"><span>Account Holder:</span> <strong>Aayush Singh</strong></div>
+            <div class="info-item"><span>Bank Name:</span> <strong>IDBI Bank</strong></div>
+            <div class="info-item"><span>Account Number:</span> <strong>0303104000146067</strong></div>
+            <div class="info-item"><span>IFSC Code:</span> <strong>IBKL0000303</strong></div>
+            <div class="info-item"><span>Branch:</span> <strong>Delhi</strong></div>
+        </div>
+
+        <div class="info-card">
+            <h3>UPI Payment Details</h3>
+            <div class="qr-container">
+                <img src="/images/qr_code.png" alt="UPI QR Code">
+            </div>
+            <div class="info-item"><span>UPI Number:</span> <strong>8868076267</strong></div>
+            <div class="info-item"><span>UPI ID:</span> <strong>singhaayush463@oksbi</strong></div>
+        </div>
+    </div>
+
+</body>
+</html>

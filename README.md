@@ -53,6 +53,7 @@ college-connect-main/
         ├── students_events.html    # Student: Event feed
         ├── students_club.html      # Student: Club directory
         └── payment.html            # QR Payment integration
+```
 ---
 ## 🛠 API Reference
 

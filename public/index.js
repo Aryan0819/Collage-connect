@@ -17,7 +17,7 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use(cookieParser());
 
 // Connect to MongoDB
-mongoose.connect('mongodb+srv://vrishankraina:vrishank@cluster0.2wttn.mongodb.net/collegeconnect')
+mongoose.connect('mongodb+srv:************************')#enter your mongoose id
   .then(() => console.log("Connected to Database"))
   .catch(err => console.log("Error in Connecting to Database: ", err));
 
@@ -312,3 +312,4 @@ app.get("/admin/view_registrations", authenticateToken, authorizeAdmin, async (r
 app.get("/registrations_list", (req, res) => {
     res.sendFile(path.join(__dirname, "public", "pages", "view_registrations.html"));
 });
+

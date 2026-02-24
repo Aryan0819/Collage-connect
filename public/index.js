@@ -5,30 +5,38 @@ const mongoose = require("mongoose");
 const path = require("path");
 const jwt = require("jsonwebtoken"); // JWT package
 const cookieParser = require('cookie-parser');
+const { ObjectId } = require("mongodb"); // Destructure ObjectId here
 
 const app = express();
 
-
 // Middleware for parsing incoming requests
 app.use(bodyParser.json());
-app.use(express.static('public'));
+// --- IMPORTANT CHANGE 1: Adjust static file serving path ---
+// Now that index.js is in the root, 'public' is a subdirectory.
+app.use(express.static(path.join(__dirname, 'public')));
 app.use(bodyParser.urlencoded({ extended: true }));
 
 app.use(cookieParser());
 
 // Connect to MongoDB
-mongoose.connect('mongodb+srv:************************')#enter your mongoose id
+// It's crucial to use process.env.MONGODB_URI in production for security and flexibility.
+mongoose.connect(process.env.MONGODB_URI || 'mongodb+srv://vrishankraina:vrishank@cluster0.2wttn.mongodb.net/collegeconnect')
   .then(() => console.log("Connected to Database"))
   .catch(err => console.log("Error in Connecting to Database: ", err));
 
 // Get database connection
 const db = mongoose.connection;
+// Ensure collections are accessed only after connection is open
+db.on('open', () => {
+  console.log('MongoDB connection opened.');
+});
+
 const usersCollection = db.collection("users");
 const eventsCollection = db.collection("events");
 const clubsCollection = db.collection("clubs");
-const { ObjectId } = require("mongodb");
 
 // Define JWT secret (for production, store in process.env.JWT_SECRET)
+// It's crucial to use process.env.JWT_SECRET in production.
 const secretKey = process.env.JWT_SECRET || "your_jwt_secret";
 
 // Middleware to verify JWT tokens
@@ -59,33 +67,35 @@ function authorizeAdmin(req, res, next) {
 // Home route
 app.get("/", (req, res) => {
     res.set({ "Access-Control-Allow-Origin": "*" });
-    res.sendFile(path.join(__dirname, "pages", "home.html"));
+    // --- IMPORTANT CHANGE 2: Adjust path for HTML files ---
+    // Now that index.js is in the root, 'pages' is inside 'public'.
+    res.sendFile(path.join(__dirname, "public", "pages", "home.html"));
 });
 
 // Register route (serves register.html)
 app.get("/register", (req, res) => {
     res.set({ "Access-Control-Allow-Origin": "*" });
-    res.sendFile(path.join(__dirname, "pages", "register.html"));
+    res.sendFile(path.join(__dirname, "public", "pages", "register.html"));
 });
 
 // Admin events route
 app.get("/admin_events", (req, res) => {
-    res.sendFile(path.join(__dirname, "pages", "admin_events.html"));
+    res.sendFile(path.join(__dirname, "public", "pages", "admin_events.html"));
 });
 
 // Student events route
 app.get("/student_events", (req, res) => {
-    res.sendFile(path.join(__dirname, "pages", "students_events.html"));
+    res.sendFile(path.join(__dirname, "public", "pages", "students_events.html"));
 });
 
 // Clubs page for students
 app.get("/students_club", (req, res) => {
-    res.sendFile(path.join(__dirname, "pages", "students_club.html"));
+    res.sendFile(path.join(__dirname, "public", "pages", "students_club.html"));
 });
 
 // Admin clubs page
 app.get("/admin_clubs", (req, res) => {
-    res.sendFile(path.join(__dirname, "pages", "admin_clubs.html"));
+    res.sendFile(path.join(__dirname, "public", "pages", "admin_clubs.html"));
 });
 
 // Get student events data
@@ -126,7 +136,6 @@ app.post("/sign_up", async (req, res) => {
         return res.status(400).json({ success: false, message: "All fields are required" });
     }
     
-    // Use provided role or default to 'user' not doing that anymore
     const data = { name, email, phno, password, role};
     console.log(data);
     try {
@@ -177,7 +186,7 @@ app.post("/sign_in", async (req, res) => {
   });
   
 // Admin event management route
-app.post("/admin_events",  authenticateToken, authorizeAdmin, async (req, res) => {
+app.post("/admin_events", authenticateToken, authorizeAdmin, async (req, res) => {
     try {
         const { title, host, desc, date, venue } = req.body;
         const event = { title, host, desc, date, venue, createdAt: new Date() };
@@ -246,7 +255,7 @@ app.post("/admin/approve_club", authenticateToken, authorizeAdmin, async (req, r
 });
 
 // Admin delete club route
-app.post("/admin/delete_club",  authenticateToken, authorizeAdmin, async (req, res) => {
+app.post("/admin/delete_club", authenticateToken, authorizeAdmin, async (req, res) => {
     try {
         const { clubId } = req.body;
         await clubsCollection.deleteOne({ _id: new ObjectId(clubId) });
@@ -259,26 +268,33 @@ app.post("/admin/delete_club",  authenticateToken, authorizeAdmin, async (req, r
 app.get("/payment", (req, res) => {
     res.sendFile(path.join(__dirname, "public", "pages", "payment.html"));
 });
-// Start the server on PORT 3000 (or environment port)
-const PORT = process.env.PORT || 5000;
+
+// --- IMPORTANT CHANGE 3: Remove app.listen() and export the app ---
+// Vercel's serverless functions don't listen on a port.
+// Instead, they expect the Express app instance to be exported.
+module.exports = app;
+// --- LOCAL DEVELOPMENT PORT ---
+const PORT = 3000;
 app.listen(PORT, () => {
-    console.log(`Listening on PORT ${PORT}`);
+    console.log(`Server is running at http://localhost:${PORT}`);
+    console.log("Press Ctrl + C to stop the server");
 });
 app.get("/payment", (req, res) => {
     res.sendFile(path.join(__dirname, "public", "pages", "payment.html"));
 });
-// Admin route to view all registered users
-app.get("/admin/registrations", authenticateToken, authorizeAdmin, async (req, res) => {
+// Endpoint to get all registered users for Admin
+app.get("/admin/view_registrations", authenticateToken, authorizeAdmin, async (req, res) => {
     try {
-        // Fetch all users but exclude passwords for security
-        const users = await usersCollection.find({}, { projection: { password: 0 } }).toArray();
-        res.status(200).json(users);
+        // Fetches all users but hides passwords for security
+        const registeredUsers = await usersCollection.find({}, { projection: { password: 0 } }).toArray();
+        res.status(200).json(registeredUsers);
     } catch (err) {
         console.error("Error fetching registrations:", err);
-        res.status(500).json({ error: "Internal server error" });
+        res.status(500).json({ success: false, message: "Internal Server Error" });
     }
 });
 
+// Route to serve the HTML page
 // Admin route to view all registered users
 app.get("/admin/registrations", authenticateToken, authorizeAdmin, async (req, res) => {
     try {
@@ -292,9 +308,7 @@ app.get("/admin/registrations", authenticateToken, authorizeAdmin, async (req, r
 });
 
 // Serve the registrations HTML page
-// --- ADMIN REGISTRATION VIEWS ---
-
-// API to fetch all registered students (Admin Only)
+// Route to fetch all registered students (Admin Only)
 app.get("/admin/view_registrations", authenticateToken, authorizeAdmin, async (req, res) => {
     try {
         // Fetch specific fields to display in the admin table
@@ -312,4 +326,3 @@ app.get("/admin/view_registrations", authenticateToken, authorizeAdmin, async (r
 app.get("/registrations_list", (req, res) => {
     res.sendFile(path.join(__dirname, "public", "pages", "view_registrations.html"));
 });
-
